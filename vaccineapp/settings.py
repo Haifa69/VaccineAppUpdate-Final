@@ -220,6 +220,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 CORS_ALLOWED_ORIGINS = [
 'https://hearit.up.railway.app/',
+    
 ]
 
 
