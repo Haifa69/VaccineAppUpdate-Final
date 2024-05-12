@@ -1,0 +1,172 @@
+{% extends "user/base.html" %} {% block content %}
+
+<div class="row">
+  <style>
+    .like-btn {
+      flex-direction: row;
+      display: flex;
+    }
+
+    .like-btn:hover {
+      cursor: pointer;
+    }
+
+    .like-btn p {
+      margin-right: 10px;
+      font-size: 13px;
+      color: black;
+      text-decoration: none;
+    }
+
+    .dislike-btn {
+      flex-direction: row;
+      display: flex;
+    }
+
+    .dislike-btn:hover {
+      cursor: pointer;
+    }
+
+    .dislike-btn p {
+      margin-right: 10px;
+      margin-left: 10px;
+      font-size: 13px;
+      color: black;
+      text-decoration: none;
+    }
+  </style>
+  <!-- Sidebar included here -->
+  <div class="col-md-3">
+    {% if user.is_authenticated %}
+    {% include 'user/sidebar.html' %}
+    {% else %}
+    <a type="button" href="{% url 'site-user-login' %}">Login</a>
+    {% endif %}
+  </div>
+  <div class="col-md-3">
+    {% if results %}
+    {% for post in results %}
+    <div class="level-item has-text-centered"
+      style="background-color: lightgray; padding: 8px; margin-top: 5px; width: 500px;">
+      <p style="font-size: 14px;" class="d-flex flex-row justify-content-between">
+        <a href="{% url 'profile' post.author.id %}" class="align-content-center" style="font-size: larger;">
+          <strong>{{ post.author.username | title }}</strong>
+        </a>
+        {% if user.is_authenticated %}
+        <a href="/follow/{{ post.author.id }}/" class="btn btn-primary align-left">Follow</a>
+        {% endif %}
+      </p>
+      <p style="font-size: 14px">
+        {{ post.juza }} {{ post.surah }}, {{ post.reader }}
+      </p>
+      <audio controls>
+        <source src="/media/{{ post.file }}" type="audio/mpeg" />
+        <source src="/media/{{ post.file }}" type="audio/webm" />
+        Your browser does not support the audio element.
+      </audio>
+      <div class="row">
+        <div class="col-md-8">
+          <p style="font-size: 13px; margin-top: 10px">{{ post.content }}</p>
+          <p style="font-size: 12px; margin-top: 10px">
+            Posted {{ post.date_posted|timesince }} ago
+          </p>
+        </div>
+
+        <div class="col-md-4" style="margin-top: 20px; margin-left: 20px">
+          <div class="row">
+            <!-- Like and dislike buttons -->
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No Post found.</p>
+    {% endif %}
+  </div>
+</div>
+
+<header class="site-header">
+  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+    <a class="navbar-brand mr-4" href="{% url 'site-homepage' %}">{% load static %} <img
+        src="{% static 'user/media/NewLogo_3.png' %}" class="rounded-left" alt="logo" width=50px height=50px /></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+      aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a href="{% url 'post_form' %}" class="btn btn-light">Post</a>
+    <a href="{% url 'record' %}" class="btn btn-light">Record</a>
+    <div class="collapse navbar-collapse" id="navbarToggle">
+      <div class="navbar-nav mr-auto"></div>
+
+      <form class="d-flex" role="search" action="{% url 'searchpage' %}" method="GET">
+        <input class="form-control me-2" type="search" placeholder="Search" name="q" required aria-label="Search" />
+        <button class="btn btn-primary align-left ml-2" type="submit">
+          Search
+        </button>
+      </form>
+    </div>
+    {% if user.is_authenticated %}
+    <a type="button" href="{% url 'site-editacc' %}" class="btn btn-light ml-3">Edit Account</a>
+    <a type="button" href="{% url 'profile' user.id %}" class="btn btn-light ml-3">View Profile</a>
+    <a class="nav-item nav-link" href="{% url 'site-user-logout' %}">{% load static %} <img
+        src="{% static 'user/media/logout.png' %}" width=30px height=30px</a>
+      {% endif%}
+  </nav>
+</header>
+
+<script>
+  $(document).ready(function () {
+    $(".like-btn").click(function (e) {
+      e.preventDefault();
+      var post_id = $(this).data("post-id");
+      $.ajax({
+        type: "POST",
+        url: "/like-post/" + post_id + "/",
+        data: {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function (data) {
+          if (data.success) {
+            alert(data);
+            // Update the like count displayed on the button
+            const likeText = $(`#like-count-${post_id}`);
+            likeText.text(data.like_count);
+          } else {
+            alert(data.error);
+          }
+        },
+        error: function (xhr, errmsg, err) {
+          alert("Error: " + xhr.status + ": " + xhr.responseText);
+        },
+      });
+    });
+
+    $(".dislike-btn").click(function (e) {
+      e.preventDefault();
+      var post_id = $(this).data("post-id");
+      $.ajax({
+        type: "POST",
+        url: "/dislike-post/" + post_id + "/",
+        data: {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+        },
+        success: function (data) {
+          if (data.success) {
+            // Update the dislike count displayed on the button
+            const dislikeText = $(`#dislike-count-${post_id}`);
+            dislikeText.text(data.dislike_count);
+          } else {
+            alert(data.error);
+          }
+        },
+        error: function (xhr, errmsg, err) {
+          alert("Error: " + xhr.status + ": " + xhr.responseText);
+        },
+      });
+    });
+  });
+</script>
+
+{% endblock content %}
+</div>
