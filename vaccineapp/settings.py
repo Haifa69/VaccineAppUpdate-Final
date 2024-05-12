@@ -219,11 +219,13 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 CORS_ALLOWED_ORIGINS = [
-'https://hearit.up.railway.app/',
-    
+    'https://hearit.up.railway.app'
+    'http://127.0.0.1',
 ]
 
 
 CSRF_TRUSTED_ORIGINS = [
-'https://hearit.up.railway.app/',
+    'http://127.0.0.1',
+    'https://hearit.up.railway.app'
 ]
+
