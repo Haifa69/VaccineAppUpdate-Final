@@ -221,13 +221,15 @@ MEDIA_ROOT = BASE_DIR / "media"
 CORS_ALLOWED_ORIGINS = [
     'https://vaccineapp.up.railway.app',
     'http://127.0.0.1',
-    'https://vaccineapplive.up.railway.app'
+    'https://vaccineapplive.up.railway.app',
+    'https://hearit.up.railway.app/'
 ]
 
 
 CSRF_TRUSTED_ORIGINS = [
     'https://vaccineapp.up.railway.app',
     'http://127.0.0.1',
-    'https://vaccineapplive.up.railway.app'
+    'https://vaccineapplive.up.railway.app',
+    'https://hearit.up.railway.app/'
 ]
 
