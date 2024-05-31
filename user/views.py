@@ -377,7 +377,7 @@ def like_post(request, post_id):
             # Create a LikeDislike object only if the user hasn't already liked the post
             LikeDislike.objects.create(post=post, user=request.user, like=True)
             like_count = LikeDislike.objects.filter(post=post, like=True).count()
-            return JsonResponse({'success': 'Post liked successfully', 'like_count': like_count})
+            return JsonResponse({'success': '', 'like_count': like_count})
         else:
             return JsonResponse({'error': 'You have already liked this post'})
     else:
